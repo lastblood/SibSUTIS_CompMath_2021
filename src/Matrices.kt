@@ -6,7 +6,7 @@ import kotlin.math.absoluteValue
 fun performGauss(matrix: RectangleMatrix): DoubleArray {
     with(matrix) {
         for (i in 0 .. y-2) {
-            swapRows((i until y).maxBy { abs(values[it][i]) } ?: i, i)
+            swapRows(i, (i until y).maxBy { abs(values[it][i]) } ?: i)
             for (j in i+1 until y) {
                 if(values[j][i] != 0.0) {
                     divideRow(j, values[j][i] / values[i][i])
@@ -25,9 +25,10 @@ fun performGauss(matrix: RectangleMatrix): DoubleArray {
 }
 
 @Throws(StackOverflowError::class)
-fun performIterative(matrix: RectangleMatrix, roots: DoubleArray = DoubleArray(matrix.y), seidel: Boolean = true, epsilon: Double = 1e-3): DoubleArray {
+fun performIterative(matrix: RectangleMatrix, roots: DoubleArray = DoubleArray(matrix.y),
+                     seidel: Boolean = true, epsilon: Double = 1e-3, printLogs: Boolean = false): DoubleArray {
+
     if(roots.any { !it.isFinite() }) throw IllegalArgumentException("Не сходится")
-//    println(roots.contentToString())
 
     val newRoots = roots.clone()
     matrix.values.forEachIndexed { i, row ->
@@ -35,6 +36,7 @@ fun performIterative(matrix: RectangleMatrix, roots: DoubleArray = DoubleArray(m
         newRoots[i] = (row.last() - rSum) / row[i]
     }
 
+    if(printLogs) println(roots.contentToString())
     val maxDelta = newRoots.zip(roots).map { (x, y) -> abs(x - y) }.max()!!
     return if(maxDelta > epsilon) performIterative(matrix, newRoots, seidel, epsilon) else newRoots
 }
@@ -56,14 +58,6 @@ fun performThomas(matrix: RectangleMatrix): DoubleArray {
     }
 }
 
-fun main() {
-    val matrix = strengthenDiagonal(getRandomMatrix(6, 5, 0.0, 10.0))
-//    val matrix = onlyDiagonals(getRandomMatrix(4,3))
-//    println(matrix)
-    println(performIterative(matrix.clone(), epsilon = 1e-6, seidel = false).contentToString())
-    println(performGauss(matrix.clone()).contentToString())
-}
-
 fun getRandomMatrix(x: Int, y: Int, origin: Double = 0.0, bound: Double = 1.0, r: SplittableRandom = SplittableRandom(System.nanoTime())): RectangleMatrix {
     val rectangleMatrix = RectangleMatrix(x, y)
     for (i in 0 until y) {
@@ -79,10 +73,10 @@ fun strengthenDiagonal(matrix: RectangleMatrix): RectangleMatrix {
     return matrix
 }
 
-fun onlyDiagonals(matrix: RectangleMatrix, diagonals: Int = 3): RectangleMatrix {
+fun onlyDiagonals(matrix: RectangleMatrix, maxDeltaFromMain: Int = 1): RectangleMatrix {
     for (y in 0 until matrix.y)
         for(x in 0 until matrix.x-1)
-            if(abs(x-y) > diagonals/2)
+            if(abs(x-y) > maxDeltaFromMain)
                 matrix.values[y][x] = 0.0
 
     return matrix

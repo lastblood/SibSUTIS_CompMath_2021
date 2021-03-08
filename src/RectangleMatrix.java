@@ -6,11 +6,11 @@ public class RectangleMatrix {
     public double[][] values;
     private final int x, y;
 
-    public void swapRows(int row1, int row2) {
-        if(row1 != row2) {
-            double[] temp = values[row1];
-            values[row1] = values[row2];
-            values[row2] = temp;
+    public void swapRows(int rowIndex1, int rowIndex2) {
+        if(rowIndex1 != rowIndex2) {
+            double[] temp = values[rowIndex1];
+            values[rowIndex1] = values[rowIndex2];
+            values[rowIndex2] = temp;
         }
     }
 
