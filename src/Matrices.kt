@@ -3,7 +3,7 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
-fun performGauss(matrix: RectangleMatrix): DoubleArray {
+fun gauss(matrix: RectangleMatrix): DoubleArray {
     with(matrix) {
         for (i in 0 .. y-2) {
             swapRows(i, (i until y).maxBy { abs(values[it][i]) } ?: i)
@@ -25,8 +25,8 @@ fun performGauss(matrix: RectangleMatrix): DoubleArray {
 }
 
 @Throws(StackOverflowError::class)
-fun performIterative(matrix: RectangleMatrix, roots: DoubleArray = DoubleArray(matrix.y),
-                     seidel: Boolean = true, epsilon: Double = 1e-3, printLogs: Boolean = false): DoubleArray {
+fun iterative(matrix: RectangleMatrix, roots: DoubleArray = DoubleArray(matrix.y),
+              seidel: Boolean = true, epsilon: Double = 1e-3, printLogs: Boolean = false): DoubleArray {
 
     if(roots.any { !it.isFinite() }) throw IllegalArgumentException("Не сходится")
 
@@ -38,10 +38,10 @@ fun performIterative(matrix: RectangleMatrix, roots: DoubleArray = DoubleArray(m
 
     if(printLogs) println(roots.contentToString())
     val maxDelta = newRoots.zip(roots).map { (x, y) -> abs(x - y) }.max()!!
-    return if(maxDelta > epsilon) performIterative(matrix, newRoots, seidel, epsilon) else newRoots
+    return if(maxDelta > epsilon) iterative(matrix, newRoots, seidel, epsilon) else newRoots
 }
 
-fun performThomas(matrix: RectangleMatrix): DoubleArray {
+fun thomas(matrix: RectangleMatrix): DoubleArray {
     with(matrix) {
         val v = DoubleArray(y).also { it[0] = values[0][1] / values[0][0] }
         val u = DoubleArray(y).also { it[0] = values[0][y-1] / values[0][0] }
@@ -52,7 +52,7 @@ fun performThomas(matrix: RectangleMatrix): DoubleArray {
             u[i] = (a[i-1] * u[i-1] - a.last()) / (-a[i] - a[i-1] * v[i-1])
         }
 
-        val roots = ArrayList<Double>(y+1).also { it[y] = u.last() }
+        val roots = DoubleArray(y+1).also { it[y] = u.last() }
         (y-1..0).forEach { i -> roots[i] = v[i] * roots[i+1] + u[i] }
         return roots.dropLast(1).toDoubleArray()
     }
