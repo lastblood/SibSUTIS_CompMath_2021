@@ -1,13 +1,12 @@
 import java.lang.IllegalArgumentException
-import java.util.function.Function
 import kotlin.math.abs
 import kotlin.math.sign
 
-fun bisection(f: Function<Double, Double>, left: Double = -Double.MAX_VALUE, right: Double = Double.MAX_VALUE,
-              eps: Double = 1e-3, lSign: Double = f.apply(left).sign, rSign: Double = f.apply(right).sign): Double {
+fun bisection(f: (Double) -> Double, left: Double = -Double.MAX_VALUE, right: Double = Double.MAX_VALUE,
+              eps: Double = 1e-3, lSign: Double = f(left).sign, rSign: Double = f(right).sign): Double {
     if(lSign == rSign) throw IllegalArgumentException()
     val mid = left/2 + right/2
-    val mSign = f.apply(mid).sign
+    val mSign = f(mid).sign
     println("$left $mid $right ${right-left}")
 
     return when {
@@ -18,12 +17,12 @@ fun bisection(f: Function<Double, Double>, left: Double = -Double.MAX_VALUE, rig
     }
 }
 
-fun chords(f: Function<Double, Double>, x0: Double = -10.0, x: Double = 10.0, eps: Double = 1e-3): Double {
-    val next = x - f.apply(x)*(x-x0) / (f.apply(x)-f.apply(x0))
+fun chords(f: (Double) -> Double, x0: Double = -10.0, x: Double = 10.0, eps: Double = 1e-3): Double {
+    val next = x - f(x)*(x-x0) / (f(x)-f(x0))
     return if(abs(next - x) < eps) next else chords(f, x0, next, eps)
 }
 
-fun newton(f: Function<Double, Double>, dfdx: Function<Double, Double>, x0: Double, eps: Double = 1e-3): Double {
-    val x = x0 - f.apply(x0) / dfdx.apply(x0)
+fun newton(f: (Double) -> Double, dfdx: (Double) -> Double, x0: Double, eps: Double = 1e-3): Double {
+    val x = x0 - f(x0) / dfdx(x0)
     return if(abs(x-x0) < eps) x else newton(f, dfdx, x, eps)
 }
