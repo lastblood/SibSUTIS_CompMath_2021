@@ -1,30 +1,11 @@
 import java.util.Arrays;
-import java.util.SplittableRandom;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class RectangleMatrix {
     public double[][] values;
     private final int x, y;
 
-    public void swapRows(int rowIndex1, int rowIndex2) {
-        if(rowIndex1 != rowIndex2) {
-            double[] temp = values[rowIndex1];
-            values[rowIndex1] = values[rowIndex2];
-            values[rowIndex2] = temp;
-        }
-    }
-
-    public void subtractRows(int from, int what) {
-        for (int i = 0; i < x; i++) {
-            values[from][i] -= values[what][i];
-        }
-    }
-
-    public void divideRow(int index, double by) {
-        for (int i = 0; i < x; i++) {
-            values[index][i] /= by;
-        }
-    }
 
     public RectangleMatrix(double[][] values) {
         this.values = values;
@@ -35,10 +16,39 @@ public class RectangleMatrix {
         x = values[0].length;
     }
 
-    public RectangleMatrix(int x, int y) {
-        this.x = x;
+    public RectangleMatrix(int y, int x) {
         this.y = y;
+        this.x = x;
         values = new double[y][x];
+    }
+
+    public RectangleMatrix(int y, int x, BiFunction<Integer, Integer, Double> initializer) {
+        this(y, x);
+        for (int i = 0; i < y; i++) {
+            for (int j = 0; j < x; j++) {
+                values[i][j] = initializer.apply(i, j);
+            }
+        }
+    }
+
+    public void swapRows(int rowIndex1, int rowIndex2) {
+        if(rowIndex1 != rowIndex2) {
+            double[] temp = values[rowIndex1];
+            values[rowIndex1] = values[rowIndex2];
+            values[rowIndex2] = temp;
+        }
+    }
+
+    public void divideRow(int index, double by) {
+        for (int i = 0; i < x; i++) {
+            values[index][i] /= by;
+        }
+    }
+
+    public void subtractRowMultipliedBy(int index, int otherIndex, double coeff) {
+        for (int i = 0; i < x; i++) {
+            values[index][i] -= values[otherIndex][i] * coeff;
+        }
     }
 
     public int getX() {
@@ -53,7 +63,7 @@ public class RectangleMatrix {
     public String toString() {
         return Arrays.stream(values)
                 .map(x -> Arrays.stream(x)
-                        .mapToObj(y -> String.format("%5.2f ", y))
+                        .mapToObj(y -> String.format("%5.5f ", y))
                         .collect(Collectors.joining("\t"))
                 ).collect(Collectors.joining("\n")) + "\n";
     }

@@ -3,23 +3,32 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
-fun gauss(matrix: RectangleMatrix): DoubleArray {
+fun gauss(matrix: RectangleMatrix, jordan: Boolean = false): DoubleArray {
     with(matrix) {
         for (i in 0 .. y-2) {
             swapRows(i, (i until y).maxBy { abs(values[it][i]) } ?: i)
             for (j in i+1 until y) {
                 if(values[j][i] != 0.0) {
-                    divideRow(j, values[j][i] / values[i][i])
-                    subtractRows(j, i)
+                    subtractRowMultipliedBy(j, i, values[j][i] / values[i][i])
+                }
+            }
+        }
+
+        // В методе Йордана для каждой i-ой строки, при подъеме, будем обнулять только элементы в i-ом же столбце
+        if(jordan) {
+            for (i in y-1 downTo 0) {
+                divideRow(i, values[i][i])
+                for (j in i-1 downTo 0) {
+                    subtractRowMultipliedBy(j, i, values[j][i])
                 }
             }
         }
 
         val roots = DoubleArray(y)
-        for (i in roots.indices.reversed()) {
-            val knownRootsSum = (i+1 until x-1).sumByDouble { values[i][it] * roots[it] }
-            roots[i] = (values[i][x-1] - knownRootsSum) / values[i][i]
-        }
+        for (i in roots.indices.reversed())
+            roots[i] = if(jordan) values[i].last()
+                            else (values[i][x-1] - (i+1 until x-1).sumByDouble { values[i][it] * roots[it] }) / values[i][i]
+
         return roots
     }
 }
@@ -36,9 +45,9 @@ fun iterative(matrix: RectangleMatrix, roots: DoubleArray = DoubleArray(matrix.y
         newRoots[i] = (row.last() - rSum) / row[i]
     }
 
-    if(printLogs) println(roots.contentToString())
+    if(printLogs) println(newRoots.contentToString())
     val maxDelta = newRoots.zip(roots).map { (x, y) -> abs(x - y) }.max()!!
-    return if(maxDelta > epsilon) iterative(matrix, newRoots, seidel, epsilon) else newRoots
+    return if(maxDelta > epsilon) iterative(matrix, newRoots, seidel, epsilon, printLogs) else newRoots
 }
 
 fun thomas(matrix: RectangleMatrix): DoubleArray {
@@ -59,11 +68,8 @@ fun thomas(matrix: RectangleMatrix): DoubleArray {
 }
 
 fun getRandomMatrix(x: Int, y: Int, origin: Double = 0.0, bound: Double = 1.0, r: SplittableRandom = SplittableRandom(System.nanoTime())): RectangleMatrix {
-    val rectangleMatrix = RectangleMatrix(x, y)
-    for (i in 0 until y) {
-        rectangleMatrix.values[i] = r.doubles(x.toLong(), origin, bound).toArray()
-    }
-    return rectangleMatrix
+    val values = Array<DoubleArray>(y) { r.doubles(x.toLong(), origin, bound).toArray() }
+    return RectangleMatrix(values)
 }
 
 fun strengthenDiagonal(matrix: RectangleMatrix): RectangleMatrix {

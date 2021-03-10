@@ -1,21 +1,29 @@
+import kotlin.math.sin
+
 fun main() {
-    lab3()
+    lab5()
 }
 
 fun lab1() {
     val matrix = getMatrixDef()
     println(matrix)
 
-    println(gauss(matrix).contentToString())
-    println(matrix)
+    val matrix1 = matrix.clone()
+    println(gauss(matrix1).contentToString())
+    println(matrix1)
+
+    val matrix2 = matrix.clone()
+    println(gauss(matrix2, true).contentToString())
+    println(matrix2)
 }
 
 fun lab2() {
     val matrix = strengthenDiagonal(getMatrixDef())
     println(matrix)
 
-    iterative(matrix.clone(), seidel = false, epsilon = 1e-6, printLogs = true)
-    iterative(matrix.clone(), seidel = true, epsilon = 1e-6, printLogs = true)
+    println(gauss(matrix.clone()).contentToString())
+    println(iterative(matrix.clone(), seidel = false, epsilon = 1e-6).contentToString())
+    println(iterative(matrix.clone(), seidel = true, epsilon = 1e-6).contentToString())
 }
 
 //todo: протестировать
@@ -23,6 +31,7 @@ fun lab3() {
     val matrix = onlyDiagonals(getMatrixDef())
     println(matrix)
 
+    println(gauss(matrix.clone()).contentToString())
     println(gauss(matrix.clone()).contentToString())
     println(thomas(matrix).contentToString())
 }
