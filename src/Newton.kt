@@ -1,18 +1,3 @@
-import kotlin.math.*
-
-
-class NLSystem(private val system: List<(DoubleArray) -> Double>, val columns: Int) {
-    val rows: Int = system.size
-
-    operator fun get(index: Int): (DoubleArray) -> Double = system[index]
-
-    operator fun invoke(values: DoubleArray): DoubleArray = system.map { f -> f(values) }.toDoubleArray()
-}
-
-operator fun RectangleMatrix.get(row: Int, column: Int): Double = values[row][column]
-operator fun RectangleMatrix.set(row: Int, column: Int, value: Double) { values[row][column] = value }
-
-
 fun newtonSystem(nlSystem: NLSystem, start: DoubleArray = DoubleArray(nlSystem.columns), epsilon: Double = 1e-3): DoubleArray {
     var lastRoots: DoubleArray
     var roots = start
@@ -27,23 +12,6 @@ fun newtonSystem(nlSystem: NLSystem, start: DoubleArray = DoubleArray(nlSystem.c
 }
 
 
-infix fun RectangleMatrix.apply(vector: DoubleArray): DoubleArray {
-    return values.map { row -> row.mapIndexed { i, x -> x * vector[i] }.sum() }.toDoubleArray()
-}
-
-infix fun DoubleArray.maxDelta(other: DoubleArray): Double =
-        (0 until min(size, other.size)).maxOfOrNull { abs(this[it] - other[it]) }!!
-
-operator fun DoubleArray.minus(other: DoubleArray): DoubleArray {
-    assert(size == other.size)
-    return DoubleArray(size) { index -> this[index] - other[index] }
-}
-
-operator fun DoubleArray.plus(other: DoubleArray): DoubleArray {
-    assert(size == other.size)
-    return DoubleArray(size) { index -> this[index] + other[index] }
-}
-
 fun derivativeBy(func: (DoubleArray) -> Double, indexOf: Int, at: DoubleArray, epsilon: Double): Double {
     val temp = at[indexOf]
     at[indexOf] = temp - epsilon
@@ -55,7 +23,6 @@ fun derivativeBy(func: (DoubleArray) -> Double, indexOf: Int, at: DoubleArray, e
     return (y2 - y0) / 2 / epsilon
 }
 
-// todo: можно выкидывать исключение вместо nullable
 fun invertMatrix(matrix: RectangleMatrix): RectangleMatrix {
     with(matrix) {
         assert(matrix.x == matrix.y)
@@ -64,6 +31,15 @@ fun invertMatrix(matrix: RectangleMatrix): RectangleMatrix {
         gauss(result, true)
         return result.companion
     }
+}
+
+
+class NLSystem(private val system: List<(DoubleArray) -> Double>, val columns: Int) {
+    val rows: Int = system.size
+
+    operator fun get(index: Int): (DoubleArray) -> Double = system[index]
+
+    operator fun invoke(values: DoubleArray): DoubleArray = system.map { f -> f(values) }.toDoubleArray()
 }
 
 
@@ -81,9 +57,5 @@ class SneakyPeakyRectangleMatrix(main: RectangleMatrix, val companion: Rectangle
     override fun swapRows(rowIndex1: Int, rowIndex2: Int) {
         super.swapRows(rowIndex1, rowIndex2)
         companion.swapRows(rowIndex1, rowIndex2)
-    }
-
-    override fun toString(): String {
-        return super.toString() + companion.toString()
     }
 }
