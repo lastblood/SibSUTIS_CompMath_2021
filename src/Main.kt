@@ -45,6 +45,13 @@ fun lab4() {
     newton(f, dfdx,-100.0, 1e-7).apply { println(this) }
 }
 
+fun lab5() {
+    val f1: (DoubleArray) -> Double = { sin(2*it[0] - it[1]) - 1.2 * it[0] - 0.4 }
+    val f2: (DoubleArray) -> Double = { 0.8 * it[0] * it[0] + 1.5 * it[1] * it[1] - 1 }
+    val system = NLSystem(listOf(f1, f2), 2)
+    val result = newtonSystem(system, doubleArrayOf(1.0, -1.0), 1e-5)
+    println(result.contentToString())
+}
 
 fun getMatrixDef(): RectangleMatrix {
     return getRandomMatrix(6,5, -10.0, 10.0)
