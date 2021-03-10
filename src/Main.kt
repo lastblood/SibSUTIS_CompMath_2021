@@ -1,7 +1,8 @@
 import kotlin.math.sin
 
 fun main() {
-    lab5()
+    lab6()
+    lab7()
 }
 
 fun lab1() {
@@ -51,6 +52,20 @@ fun lab5() {
     val system = NLSystem(listOf(f1, f2), 2)
     val result = newtonSystem(system, doubleArrayOf(1.0, -1.0), 1e-5)
     println(result.contentToString())
+}
+
+fun lab6() {
+    val f = lagrange(listOf(1.0 to 2.0, 2.0 to 4.0, 3.0 to 6.0, 5.0 to 10.0))
+    println(f(1.1))
+    println(f(4.6))
+    println(f(12.0))
+}
+
+fun lab7() {
+    val f = Aitken(listOf(1.0 to 2.0, 2.0 to 4.0, 3.0 to 6.0, 5.0 to 10.0))
+    println(f(1.1))
+    println(f(4.6))
+    println(f(12.0))
 }
 
 fun getMatrixDef(): RectangleMatrix {
