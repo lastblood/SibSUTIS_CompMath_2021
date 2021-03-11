@@ -50,21 +50,20 @@ fun iterative(matrix: RectangleMatrix, roots: DoubleArray = DoubleArray(matrix.y
     return if(maxDelta > epsilon) iterative(matrix, newRoots, seidel, epsilon, printLogs) else newRoots
 }
 
-fun thomas(matrix: RectangleMatrix): DoubleArray {
-    with(matrix) {
-        val v = DoubleArray(y).also { it[0] = values[0][1] / values[0][0] }
-        val u = DoubleArray(y).also { it[0] = values[0][y-1] / values[0][0] }
+fun thomas(mx: RectangleMatrix): DoubleArray {
+    val y = mx.y
+    fun c(i: Int) = mx[i, i]
+    fun f(i: Int) = mx[i, y]
 
-        for (i in 1 until y) {
-            val a = values[i]
-            v[i] = (if(i != y-1) a[i+1] else 0.0) / (-a[i] - a[i-1] * v[i-1])
-            u[i] = (a[i-1] * u[i-1] - a.last()) / (-a[i] - a[i-1] * v[i-1])
-        }
-
-        val roots = DoubleArray(y+1).also { it[y] = u.last() }
-        (y-1..0).forEach { i -> roots[i] = v[i] * roots[i+1] + u[i] }
-        return roots.dropLast(1).toDoubleArray()
+    for (i in 1 until y) {
+        val m = mx[i, i-1] / c(i-1)
+        mx[i,i] = c(i) - m * mx[i-1,i]
+        mx[i,y] = f(i) - f(i-1) * m
     }
+
+    val roots = DoubleArray(y).also { it[y-1] = f(y-1)/c(y-1) }
+    (y-2 downTo 0).forEach { i -> roots[i] = (f(i) - mx[i,i+1]*roots[i+1]) / c(i) }
+    return roots
 }
 
 fun getRandomMatrix(x: Int, y: Int, origin: Double = 0.0, bound: Double = 1.0, r: SplittableRandom = SplittableRandom(System.nanoTime())): RectangleMatrix {
