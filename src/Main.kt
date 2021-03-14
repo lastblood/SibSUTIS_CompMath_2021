@@ -55,7 +55,7 @@ fun lab5() {
 }
 
 fun lab6() {
-    val f = lagrange(listOf(1.0 to 2.0, 2.0 to 4.0, 3.0 to 6.0, 5.0 to 10.0))
+    val f = Lagrange(listOf(1.0 to 2.0, 2.0 to 4.0, 3.0 to 6.0, 5.0 to 10.0))
     println(f(1.1))
     println(f(4.6))
     println(f(12.0))
