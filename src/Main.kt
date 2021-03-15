@@ -3,6 +3,7 @@ import kotlin.math.sin
 fun main() {
     lab6()
     lab7()
+    lab8()
 }
 
 fun lab1() {
@@ -54,18 +55,24 @@ fun lab5() {
     println(result.contentToString())
 }
 
+val il = listOf(1.0 to 2.0, 2.0 to 4.0, 3.0 to 6.0, 5.0 to 10.0)
+fun testInterpolation(f: Interpolation) {
+    println("${f(1.1)} ${f(4.6)} ${f(12.0)}")
+}
+
 fun lab6() {
-    val f = Lagrange(listOf(1.0 to 2.0, 2.0 to 4.0, 3.0 to 6.0, 5.0 to 10.0))
-    println(f(1.1))
-    println(f(4.6))
-    println(f(12.0))
+    val f = Lagrange(il)
+    testInterpolation(f)
 }
 
 fun lab7() {
-    val f = Aitken(listOf(1.0 to 2.0, 2.0 to 4.0, 3.0 to 6.0, 5.0 to 10.0))
-    println(f(1.1))
-    println(f(4.6))
-    println(f(12.0))
+    val f = Aitken(il)
+    testInterpolation(f)
+}
+
+fun lab8() {
+    val f = Newton(il)
+    testInterpolation(f)
 }
 
 fun getMatrixDef(): RectangleMatrix {
