@@ -28,6 +28,7 @@ class Newton(pairs: List<Pair<Double, Double>>): Interpolation(pairs) {
     private fun diff(a: Int, b: Int): Double =
             m[a to b] ?: (diff(a+1,b) - diff(a,b-1)) / (pairs[b].first - pairs[a].first)
 
-    override operator fun invoke(x: Double): Double = Stream.iterate(1.0 to 0) { (v,i) -> v * (x-pairs[i].first) to i+1 }
-                .mapToDouble { (v,i) -> v * diff(0,i) }.limit(pairs.size.toLong()).sum()
+    override operator fun invoke(x: Double): Double =
+            Stream.iterate(1.0 to 0) { (v,i) -> v * (x-pairs[i].first) to i+1 }
+                    .mapToDouble { (v,i) -> v * diff(0,i) }.limit(pairs.size.toLong()).sum()
 }

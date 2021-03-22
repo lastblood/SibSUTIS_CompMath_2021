@@ -42,7 +42,7 @@ fun lab3() {
 fun lab4() {
     val f = { x: Double -> x*x*x/50 - 8*x - 81 }
     val dfdx = { x: Double -> 3*x*x/50 - 8 }
-//    performBisection(f, -10.0, 8.3).apply { println(this) }
+    bisection(f, -100.0, 100.0).apply { println(this) }
     chords(f, -100.0, 100.0, 1e-7).apply { println(this) }
     newton(f, dfdx,-100.0, 1e-7).apply { println(this) }
 }

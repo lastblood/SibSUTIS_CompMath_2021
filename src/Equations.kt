@@ -7,7 +7,6 @@ fun bisection(f: (Double) -> Double, left: Double = -Double.MAX_VALUE, right: Do
     if(lSign == rSign) throw IllegalArgumentException()
     val mid = left/2 + right/2
     val mSign = f(mid).sign
-    println("$left $mid $right ${right-left}")
 
     return when {
         right-left < eps -> mid

@@ -12,28 +12,6 @@ fun newtonSystem(nlSystem: NLSystem, start: DoubleArray = DoubleArray(nlSystem.c
 }
 
 
-fun derivativeBy(func: (DoubleArray) -> Double, indexOf: Int, at: DoubleArray, epsilon: Double): Double {
-    val temp = at[indexOf]
-    at[indexOf] = temp - epsilon
-    val y0 = func(at)
-    at[indexOf] = temp + epsilon
-    val y2 = func(at)
-    at[indexOf] = temp
-
-    return (y2 - y0) / 2 / epsilon
-}
-
-fun invertMatrix(matrix: RectangleMatrix): RectangleMatrix {
-    with(matrix) {
-        assert(matrix.x == matrix.y)
-        val e = RectangleMatrix(matrix.y, matrix.x) { y,x -> if(y==x) 1.0 else 0.0 }
-        val result = SneakyPeakyRectangleMatrix(matrix, e)
-        gauss(result, true)
-        return result.companion
-    }
-}
-
-
 class NLSystem(private val system: List<(DoubleArray) -> Double>, val columns: Int) {
     val rows: Int = system.size
 
