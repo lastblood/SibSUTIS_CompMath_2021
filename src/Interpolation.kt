@@ -1,6 +1,6 @@
 import java.util.stream.Stream
+import kotlin.collections.HashMap
 import kotlin.math.abs
-import kotlin.math.sin
 
 abstract class Interpolation(pairsList: List<Pair<Double, Double>>) {
     val pairs = pairsList.toMutableList()
@@ -16,26 +16,26 @@ class Lagrange(pairs: List<Pair<Double, Double>>): Interpolation(pairs) {
 }
 
 class Aitken(pairs: List<Pair<Double, Double>>): Interpolation(pairs) {
+    override operator fun invoke(x: Double) =
+            step(0, pairs.lastIndex, x, pairs.mapIndexed { i, pair -> (i to i) to pair.second }.toMap(HashMap()))
 
-    override operator fun invoke(x: Double) = step(0, pairs.lastIndex, x)
-
-    private fun step(i: Int, j: Int, x: Double): Double =
-            if (i == j) pairs[i].second
-            else ((x - pairs[i].first) * step(i+1, j, x) - step(i, j-1, x) * (x - pairs[j].first)) / (pairs[j].first - pairs[i].first)
+    private fun step(i: Int, j: Int, x: Double, m: HashMap<Pair<Int, Int>, Double>): Double = m.computeIfNeeded(i to j) {
+        ((x - pairs[i].first)*step(i+1, j, x, m) - step(i, j-1, x, m)*(x - pairs[j].first)) / (pairs[j].first - pairs[i].first)
+    }
 }
 
 class Newton(pairs: List<Pair<Double, Double>>): Interpolation(pairs) {
     private val m = HashMap<Pair<Int, Int>, Double>(pairs.mapIndexed { i, pair -> (i to i) to pair.second }.toMap())
 
-    private fun diff(a: Int, b: Int): Double =
-            m[a to b] ?: (diff(a+1,b) - diff(a,b-1)) / (pairs[b].first - pairs[a].first)
+    private fun diff(a: Int, b: Int): Double = m.computeIfNeeded(a to b) {
+        (diff(a+1, b) - diff(a, b-1)) / (pairs[b].first - pairs[a].first)
+    }
 
     override operator fun invoke(x: Double): Double =
             Stream.iterate(1.0 to 0) { (v,i) -> v * (x-pairs[i].first) to i+1 }
                     .mapToDouble { (v,i) -> v * diff(0,i) }.limit(pairs.size.toLong()).sum()
 }
 
-val q: (Double)->Double = { x -> 1.5*sin(x)+.5 }
 fun testInterpolation(func: (Double) -> Double, interpolatedFunc: (Double) -> Double, from: Double, to: Double, count: Int): Double {
     val step = (to-from) / count
     val s = (1 until count).map { from + it*step }.map { abs(func(it) - interpolatedFunc(it)) }

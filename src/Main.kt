@@ -1,7 +1,7 @@
 import kotlin.math.*
 
 fun main() {
-    lab10()
+    lab678()
 }
 
 fun lab1() {
