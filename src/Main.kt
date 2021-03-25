@@ -1,9 +1,7 @@
 import kotlin.math.*
 
 fun main() {
-    lab6()
-    lab7()
-    lab8()
+    lab10()
 }
 
 fun lab1() {
@@ -69,6 +67,29 @@ fun lab7() {
 fun lab8() {
     val f = Newton(il)
     testInterpolation({ 2 * it}, {f(it)}, 0.0, 10.0, 100)
+}
+
+val f1 = { x: Double -> ln(x+1) / x }
+val f2 = { x: Double -> x*x*x / exp(x) * sin(x + 2) }
+val f3 = { x: Double -> x*x*x / exp(x) * atan(x-2) * sin(x+1) }
+
+fun lab10() {
+    integrate(f1, 0.1, 1.0, 1e-7)
+    println(state)
+    integrateTrapezoid(f1, 0.1, 1.0, 1e-7)
+    println(stateTrapezoid)
+    println("${integrateDaR(f1, 0.1, 1.0, 1e-7)} $count1")
+    println("${integrateTrapezoidDaR(f1, 0.1, 1.0, 1e-7)} $count2")
+
+    count1 = 0; count2 = 0
+    println("")
+
+    integrate(f3, -1.0, 12.0, 1e-5)
+    println(state)
+    integrateTrapezoid(f3, -1.0, 12.0, 1e-5)
+    println(stateTrapezoid)
+    println("${integrateDaR(f3, -1.0, 12.0, 1e-5)}, $count1")
+    println("${integrateTrapezoidDaR(f3, -1.0, 12.0, 1e-5)}, $count2")
 }
 
 fun getMatrixDef(): RectangleMatrix {
