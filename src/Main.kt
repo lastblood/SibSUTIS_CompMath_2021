@@ -1,4 +1,4 @@
-import kotlin.math.sin
+import kotlin.math.*
 
 fun main() {
     lab6()
@@ -28,7 +28,6 @@ fun lab2() {
     println(iterative(matrix.clone(), seidel = true, epsilon = 1e-6).contentToString())
 }
 
-//todo: протестировать
 fun lab3() {
     val matrix = onlyDiagonals(getMatrixDef())
     println(matrix)
@@ -56,23 +55,20 @@ fun lab5() {
 }
 
 val il = listOf(1.0 to 2.0, 2.0 to 4.0, 3.0 to 6.0, 5.0 to 10.0)
-fun testInterpolation(f: Interpolation) {
-    println("${f(1.1)} ${f(4.6)} ${f(12.0)}")
-}
 
 fun lab6() {
     val f = Lagrange(il)
-    testInterpolation(f)
+    testInterpolation({ 2 * it}, {f(it)}, 0.0, 10.0, 100)
 }
 
 fun lab7() {
     val f = Aitken(il)
-    testInterpolation(f)
+    testInterpolation({ 2 * it}, {f(it)}, 0.0, 10.0, 100)
 }
 
 fun lab8() {
     val f = Newton(il)
-    testInterpolation(f)
+    testInterpolation({ 2 * it}, {f(it)}, 0.0, 10.0, 100)
 }
 
 fun getMatrixDef(): RectangleMatrix {

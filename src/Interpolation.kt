@@ -1,4 +1,6 @@
 import java.util.stream.Stream
+import kotlin.math.abs
+import kotlin.math.sin
 
 abstract class Interpolation(pairsList: List<Pair<Double, Double>>) {
     val pairs = pairsList.toMutableList()
@@ -31,4 +33,13 @@ class Newton(pairs: List<Pair<Double, Double>>): Interpolation(pairs) {
     override operator fun invoke(x: Double): Double =
             Stream.iterate(1.0 to 0) { (v,i) -> v * (x-pairs[i].first) to i+1 }
                     .mapToDouble { (v,i) -> v * diff(0,i) }.limit(pairs.size.toLong()).sum()
+}
+
+val q: (Double)->Double = { x -> 1.5*sin(x)+.5 }
+fun testInterpolation(func: (Double) -> Double, interpolatedFunc: (Double) -> Double, from: Double, to: Double, count: Int): Double {
+    val step = (to-from) / count
+    val s = (1 until count).map { from + it*step }.map { abs(func(it) - interpolatedFunc(it)) }
+    println(s.average())
+    println(s.max()!!)
+    return s.average()
 }
