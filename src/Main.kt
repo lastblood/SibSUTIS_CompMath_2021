@@ -56,17 +56,34 @@ val il = listOf(1.0 to 2.0, 2.0 to 4.0, 3.0 to 6.0, 5.0 to 10.0)
 
 fun lab6() {
     val f = Lagrange(il)
-    testInterpolation({ 2 * it}, {f(it)}, 0.0, 10.0, 100)
+    testInterpolation({ 2 * it}, {f(it)}, 0.0, 20.0, 100)
 }
 
 fun lab7() {
     val f = Aitken(il)
-    testInterpolation({ 2 * it}, {f(it)}, 0.0, 10.0, 100)
+    testInterpolation({ 2 * it}, {f(it)}, 0.0, 20.0, 100)
 }
 
 fun lab8() {
     val f = Newton(il)
-    testInterpolation({ 2 * it}, {f(it)}, 0.0, 10.0, 100)
+    testInterpolation({ 2 * it}, {f(it)}, 0.0, 20.0, 100)
+}
+
+fun lab678() {
+    val list = generateListAt({ sin(it) }, 0.0 to 4.0, 25)
+    println(list)
+
+    val f6 = Lagrange(list)
+    val f7 = Aitken(list)
+    val f8 = Newton(list)
+
+    val original: (Double) -> Double = { sin(it) }
+
+    testInterpolation(original, {f6(it)}, 0.0, 4.0, 100)
+    println("aitken")
+    testInterpolation(original, {f7(it)}, 0.0, 4.0, 100)
+    println("newton")
+    testInterpolation(original, {f8(it)}, 0.0, 4.0, 100)
 }
 
 val f1 = { x: Double -> ln(x+1) / x }
@@ -78,8 +95,8 @@ fun lab10() {
     println(state)
     integrateTrapezoid(f1, 0.1, 1.0, 1e-7)
     println(stateTrapezoid)
-    println("${integrateDaR(f1, 0.1, 1.0, 1e-7)} $count1")
-    println("${integrateTrapezoidDaR(f1, 0.1, 1.0, 1e-7)} $count2")
+    println("(${integrateDaR(f1, 0.1, 1.0, 1e-7)}, $count1)")
+    println("(${integrateTrapezoidDaR(f1, 0.1, 1.0, 1e-7)}, $count2)")
 
     count1 = 0; count2 = 0
     println("")
@@ -88,8 +105,8 @@ fun lab10() {
     println(state)
     integrateTrapezoid(f3, -1.0, 12.0, 1e-5)
     println(stateTrapezoid)
-    println("${integrateDaR(f3, -1.0, 12.0, 1e-5)}, $count1")
-    println("${integrateTrapezoidDaR(f3, -1.0, 12.0, 1e-5)}, $count2")
+    println("(${integrateDaR(f3, -1.0, 12.0, 1e-5)}, $count1)")
+    println("(${integrateTrapezoidDaR(f3, -1.0, 12.0, 1e-5)}, $count2)")
 }
 
 fun getMatrixDef(): RectangleMatrix {
