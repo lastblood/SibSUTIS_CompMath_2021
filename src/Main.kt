@@ -1,7 +1,7 @@
 import kotlin.math.*
 
 fun main() {
-    lab678()
+    lab11()
 }
 
 fun lab1() {
@@ -120,6 +120,25 @@ fun lab10() {
     println("(${integrateTrapezoidDaR(f3, -1.0, 12.0, 1e-5)}, $count2)")
 }
 
-fun getMatrixDef(): RectangleMatrix {
-    return getRandomMatrix(6,5, -10.0, 10.0)
+fun lab11() {
+    val function: (Double, Double) -> Double = { x, y -> x * x - 2 * y }
+    val idealResult: (Double) -> Double = { 1/4*(2*it*it-2*it+3*exp(-2*it)+1) }
+
+    val startXY = 0.0 to 1.0
+    val step = 0.1
+    val count = 10
+
+    val l = listOf(
+        euler(function, startXY, step, count, 0),
+        euler(function, startXY, step, count, 2),
+        euler(function, startXY, step, count, 4),
+        euler(function, startXY, step, count, 6),
+        ralston(function, startXY, step, count),
+        rungeKutta4(function, startXY, step, count)
+    )
+
+    l[0].indices.forEach { ind ->
+        l.map { String.format(java.util.Locale.ROOT, "%.7f\t", it[ind].second) }.forEach { print(it) }
+        println()
+    }
 }
