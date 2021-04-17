@@ -92,3 +92,6 @@ fun onlyDiagonals(matrix: RectangleMatrix, maxDeltaFromMain: Int = 1): Rectangle
 
     return matrix
 }
+
+fun fullMatrix(matrix: RectangleMatrix, vector: DoubleArray): RectangleMatrix =
+    RectangleMatrix(matrix.y, matrix.x+1) { y,x -> if(x == matrix.x) vector[y] else matrix[y,x] }

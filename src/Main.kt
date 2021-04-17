@@ -1,7 +1,12 @@
+import org.jfree.chart.ChartPanel
+import org.jfree.chart.annotations.XYTextAnnotation
+import java.awt.Color
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
 import kotlin.math.*
 
 fun main() {
-    lab11()
+    lab12()
 }
 
 fun lab1() {
@@ -141,4 +146,65 @@ fun lab11() {
         l.map { String.format(java.util.Locale.ROOT, "%.7f\t", it[ind].second) }.forEach { print(it) }
         println()
     }
+}
+
+fun lab12() {
+    val sinUp = { x: Double -> 0.6 * x + 0.5 * sin(2 * x) }
+    var currentPower = 3
+    val range = -10.0..10.0 step 0.1
+
+    var dots = generateListAt(sinUp, -10.0 to 10.0, 50)
+    var approximationFunction = OLS(dots, currentPower)
+    var approximatedDots = range.map { it to approximationFunction(it) }
+    val fullDots = range.map { it to sinUp(it) }
+
+    val plotter = Plotter()
+
+    fun initPlotter() {
+        plotter.removeAll()
+                .addDots(dots)
+                .addCustom(fullDots) { renderer, index ->
+                    renderer.setSeriesShapesVisible(index, false)
+                    renderer.setSeriesPaint(index, Color.GREEN)
+                }
+                .addLine(approximatedDots)
+    }
+
+    initPlotter()
+
+    fun createChartPanel(): ChartPanel {
+        val chart = plotter.getChart(fixed = true)
+        val plot = chart.xyPlot
+        val xyTextAnnotation = XYTextAnnotation(currentPower.toString(), 10.0, 40.0)
+        xyTextAnnotation.backgroundPaint = Color.BLACK
+        plot.addAnnotation(xyTextAnnotation)
+        return ChartPanel(chart)
+    }
+
+    var chartPanel = createChartPanel()
+    val frame = PlotterFrame(currentPower.toString(), chartPanel)
+
+    frame.addKeyListener(object : KeyAdapter() {
+        override fun keyReleased(e: KeyEvent?) {
+            synchronized(frame) {
+                when(e!!.keyChar) {
+                    '-' -> currentPower = max(1, currentPower-1)
+                    '=' -> currentPower++
+                    ' ' -> { dots = generateListAt(sinUp, -10.0 to 10.0, 20) }
+                    else -> return@keyReleased
+                }
+
+                approximationFunction = OLS(dots, currentPower)
+                approximatedDots = range.map { it to approximationFunction(it) }
+
+                initPlotter()
+
+                chartPanel = createChartPanel()
+                frame.title = currentPower.toString()
+                frame.rerender(chartPanel)
+            }
+        }
+    })
+
+    frame.isVisible = true
 }
