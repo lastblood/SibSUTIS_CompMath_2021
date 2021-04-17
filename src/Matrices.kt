@@ -66,6 +66,12 @@ fun thomas(mx: RectangleMatrix): DoubleArray {
     return roots
 }
 
+fun thomasArray(low: DoubleArray, mid: DoubleArray, high: DoubleArray, ans: DoubleArray): DoubleArray {
+    val m = iterateToList(high[0]/mid[0], ans.size-1, { i, last -> high[i] / (mid[i] - low[i-1] * last) })
+    val n = iterateToList(ans[0]/mid[0], ans.size, { i, last -> (ans[i] - low[i-1]*last) / (mid[i] - low[i-1]*m[i-1]) } )
+    return iterateToList(n[ans.size-1], ans.size, { i, last -> n[i] - m[i]*last }, true).toDoubleArray()
+}
+
 fun getRandomMatrix(x: Int, y: Int, origin: Double = 0.0, bound: Double = 1.0, r: SplittableRandom = SplittableRandom(System.nanoTime())): RectangleMatrix {
     val values = Array<DoubleArray>(y) { r.doubles(x.toLong(), origin, bound).toArray() }
     return RectangleMatrix(values)

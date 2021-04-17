@@ -35,6 +35,10 @@ fun lab3() {
     println(thomas(matrix).contentToString())
 }
 
+fun getMatrixDef(): RectangleMatrix {
+    return getRandomMatrix(6,5, -10.0, 10.0)
+}
+
 // Нелинейные уравнения: бисекция, хорды, Ньютон
 fun lab4() {
     val f = { x: Double -> x*x*x/50 - 8*x - 81 }
@@ -69,21 +73,28 @@ fun lab8() {
     testInterpolation({ 2 * it}, {f(it)}, 0.0, 20.0, 100)
 }
 
-fun lab678() {
-    val list = generateListAt({ sin(it) }, 0.0 to 4.0, 25)
-    println(list)
+fun interpolation() {
+    val lower = 0.0
+    val upper = 10.0
+    val count = 100
+    val func: (Double) -> Double = { sin(it) }
+    val list = listOf(lower to func(lower)) + generateListAt(func, lower to upper, 13) + listOf(upper to func(upper))
 
-    val f6 = Lagrange(list)
-    val f7 = Aitken(list)
-    val f8 = Newton(list)
+    val lagrange = Lagrange(list)
+    val aitken = Aitken(list)
+    val newton = Newton(list)
+    val cubic = CubicSpline(list)
 
-    val original: (Double) -> Double = { sin(it) }
+    val original: (Double) -> Double = func
 
-    testInterpolation(original, {f6(it)}, 0.0, 4.0, 100)
+    println("lagrange")
+    testInterpolation(original, {lagrange(it)}, lower, upper, count)
     println("aitken")
-    testInterpolation(original, {f7(it)}, 0.0, 4.0, 100)
+    testInterpolation(original, {aitken(it)}, lower, upper, count)
     println("newton")
-    testInterpolation(original, {f8(it)}, 0.0, 4.0, 100)
+    testInterpolation(original, {newton(it)}, lower, upper, count)
+    println("cubic")
+    testInterpolation(original, {cubic(it)}, lower, upper, count)
 }
 
 val f1 = { x: Double -> ln(x+1) / x }
