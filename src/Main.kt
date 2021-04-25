@@ -1,5 +1,4 @@
 import org.jfree.chart.ChartPanel
-import org.jfree.chart.annotations.XYTextAnnotation
 import java.awt.Color
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
@@ -79,27 +78,23 @@ fun lab8() {
 }
 
 fun interpolation() {
-    val lower = 0.0
-    val upper = 10.0
-    val count = 100
+    val lower = -5.0
+    val upper = 5.0
+    val testDotsCount = 100
     val func: (Double) -> Double = { sin(it) }
-    val list = listOf(lower to func(lower)) + generateListAt(func, lower to upper, 13) + listOf(upper to func(upper))
-
-    val lagrange = Lagrange(list)
-    val aitken = Aitken(list)
-    val newton = Newton(list)
-    val cubic = CubicSpline(list)
+    val interpolateDotsCount = 5
+    val list = listOf(lower to func(lower)) + generateListAt(func, lower to upper, interpolateDotsCount) + listOf(upper to func(upper))
 
     val original: (Double) -> Double = func
 
     println("lagrange")
-    testInterpolation(original, {lagrange(it)}, lower, upper, count)
+    testInterpolation(original, {Lagrange(list)(it)}, lower, upper, testDotsCount)
     println("aitken")
-    testInterpolation(original, {aitken(it)}, lower, upper, count)
+    testInterpolation(original, {Aitken(list)(it)}, lower, upper, testDotsCount)
     println("newton")
-    testInterpolation(original, {newton(it)}, lower, upper, count)
+    testInterpolation(original, {Newton(list)(it)}, lower, upper, testDotsCount)
     println("cubic")
-    testInterpolation(original, {cubic(it)}, lower, upper, count)
+    testInterpolation(original, {CubicSpline(list)(it)}, lower, upper, testDotsCount)
 }
 
 val f1 = { x: Double -> ln(x+1) / x }
@@ -153,7 +148,8 @@ fun lab12() {
     var currentPower = 3
     val range = -10.0..10.0 step 0.1
 
-    var dots = generateListAt(sinUp, -10.0 to 10.0, 50)
+    val dotsCount = 50
+    var dots = generateListAt(sinUp, -10.0 to 10.0, dotsCount)
     var approximationFunction = OLS(dots, currentPower)
     var approximatedDots = range.map { it to approximationFunction(it) }
     val fullDots = range.map { it to sinUp(it) }
@@ -172,16 +168,7 @@ fun lab12() {
 
     initPlotter()
 
-    fun createChartPanel(): ChartPanel {
-        val chart = plotter.getChart(fixed = true)
-        val plot = chart.xyPlot
-        val xyTextAnnotation = XYTextAnnotation(currentPower.toString(), 10.0, 40.0)
-        xyTextAnnotation.backgroundPaint = Color.BLACK
-        plot.addAnnotation(xyTextAnnotation)
-        return ChartPanel(chart)
-    }
-
-    var chartPanel = createChartPanel()
+    var chartPanel = ChartPanel(plotter.getChart())
     val frame = PlotterFrame(currentPower.toString(), chartPanel)
 
     frame.addKeyListener(object : KeyAdapter() {
@@ -190,7 +177,7 @@ fun lab12() {
                 when(e!!.keyChar) {
                     '-' -> currentPower = max(1, currentPower-1)
                     '=' -> currentPower++
-                    ' ' -> { dots = generateListAt(sinUp, -10.0 to 10.0, 20) }
+                    ' ' -> { dots = generateListAt(sinUp, -10.0 to 10.0, dotsCount) }
                     else -> return@keyReleased
                 }
 
@@ -199,7 +186,7 @@ fun lab12() {
 
                 initPlotter()
 
-                chartPanel = createChartPanel()
+                chartPanel = ChartPanel(plotter.getChart())
                 frame.title = currentPower.toString()
                 frame.rerender(chartPanel)
             }

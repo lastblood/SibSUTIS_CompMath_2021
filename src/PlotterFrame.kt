@@ -10,6 +10,7 @@ class PlotterFrame(title: String, private var chartPanel: ChartPanel): JFrame(ti
         pack()
         repaint()
         defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+        isResizable = false
         isVisible = true
     }
 

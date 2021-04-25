@@ -66,7 +66,7 @@ class CubicSpline(pairs: List<Pair<Double, Double>>, d1: Double = 0.0, d2: Doubl
     private fun d(a: Int): Double = (pairs[a+1].y - pairs[a].y) / (pairs[a+1].x - pairs[a].x)
 
     override fun invoke(x: Double): Double {
-        var i = pairs.withIndex().filter { (_, pair) -> pair.x < x }.maxOfOrNull { (i,_) -> i } ?: 0
+        val i = pairs.withIndex().filter { (_, pair) -> pair.x < x }.maxOfOrNull { (i,_) -> i } ?: 0
 
         return (m[i] * ((t[i+1] - x).pow(3.0)) / 6 +
                 m[i+1] * ((x - t[i]).pow(3.0)) / 6 +
